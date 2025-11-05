@@ -23,14 +23,28 @@ export default function AllPerks() {
 
   // ==================== SIDE EFFECTS WITH useEffect HOOK ====================
 
- /*
- TODO: HOOKS TO IMPLEMENT
- * useEffect Hook #1: Initial Data Loading
- * useEffect Hook #2: Auto-search on Input Change
+ {/*
+  TODO: HTML INPUT HANDLERS
+  * Update state when user types in search box
+  * update state when user selects filter
+*/}
 
-*/
+useEffect(() => {
+  // initial load when component mounts
+  loadAllPerks();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, []);
+useEffect(() => {
+  const t = setTimeout(() => {
+    loadAllPerks({ search: searchQuery, merchant: merchantFilter });
+  }, 400);
 
-  
+  return () => clearTimeout(t);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [searchQuery, merchantFilter]);
+
+
+
   useEffect(() => {
     // Extract all merchant names from perks array
     const merchants = perks
@@ -39,7 +53,10 @@ export default function AllPerks() {
     
     // Create array of unique merchants using Set
     // Set automatically removes duplicates, then we convert back to array
-    const unique = [...new Set(merchants)]
+    // replace the invalid line: const unique = [.new Set(merchants)]
+const unique = [...new Set(merchants)];
+setUniqueMerchants(unique);
+
     
     // Update state with unique merchants
     setUniqueMerchants(unique)
@@ -120,6 +137,7 @@ export default function AllPerks() {
         </div>
       </div>
 
+
       {/* Search and Filter Form */}
       <div className="card">
         <form onSubmit={handleSearch} className="space-y-4">
@@ -128,20 +146,22 @@ export default function AllPerks() {
             
             
             <div>
-              <label className="block text-sm font-medium text-zinc-700 mb-2">
-                <span className="material-symbols-outlined text-sm align-middle">search</span>
-                {' '}Search by Name
-              </label>
-              <input
-                type="text"
-                className="input"
-                placeholder="Enter perk name..."
-                
-              />
-              <p className="text-xs text-zinc-500 mt-1">
-                Auto-searches as you type, or press Enter / click Search
-              </p>
-            </div>
+  <label className="block text-sm font-medium text-zinc-700 mb-2">
+    <span className="material-symbols-outlined text-sm align-middle">search</span>
+    {' '}Search by Name
+  </label>
+  <input
+    type="text"
+    className="input"
+    placeholder="Enter perk name..."
+    value={searchQuery}
+    onChange={(e) => setSearchQuery(e.target.value)}
+  />
+  <p className="text-xs text-zinc-500 mt-1">
+    Auto-searches as you type, or press Enter / click Search
+  </p>
+</div>
+
 
             {/* Merchant Filter Dropdown - Controlled Component */}
             <div>
@@ -150,17 +170,14 @@ export default function AllPerks() {
                 {' '}Filter by Merchant
               </label>
               <select
-                className="input"
-                
-              >
-                <option value="">All Merchants</option>
-                
-                {uniqueMerchants.map(merchant => (
-                  <option key={merchant} value={merchant}>
-                    {merchant}
-                  </option>
-                ))}
-              </select>
+  value={merchantFilter}
+  onChange={(e) => setMerchantFilter(e.target.value)}
+  className="input"
+>
+  <option value="">All Merchants</option>
+  {uniqueMerchants.map(m => <option key={m} value={m}>{m}</option>)}
+</select>
+
             </div>
           </div>
 
